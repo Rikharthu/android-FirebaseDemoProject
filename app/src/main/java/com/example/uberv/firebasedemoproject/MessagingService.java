@@ -4,6 +4,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -13,6 +15,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class MessagingService extends FirebaseMessagingService {
     public static final String LOG_TAG=MessagingService.class.getSimpleName();
+    public static final String NOTIFICATION_EXTRA = "notification_extra";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -31,7 +34,8 @@ public class MessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
             Log.d(LOG_TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             String message = remoteMessage.getNotification().getBody();
-            showNotification(message);
+            // no need, since FireBase will show it's own notification
+            //showNotification(message);
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -45,16 +49,18 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void showNotification(String msg){
+//        Uri sound= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         // Notification
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         PendingIntent pendingIntent=PendingIntent.getActivity(getApplicationContext(),1488,intent,0);
-
+        intent.putExtra(NOTIFICATION_EXTRA,msg);
         Notification notification = new Notification.Builder(getApplicationContext())
                 .setContentTitle("Firebase notification!")
                 .setContentText(msg)
                 .setSmallIcon(R.drawable.common_ic_googleplayservices)
                 .setContentIntent(pendingIntent)
                 .addAction(android.R.drawable.sym_action_chat,"Chat",pendingIntent)
+//                .setSound(sound)
                 .build();
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationManager.notify(666,notification);

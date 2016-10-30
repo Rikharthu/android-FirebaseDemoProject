@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -18,6 +19,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.uberv.firebasedemoproject.MessagingService.NOTIFICATION_EXTRA;
 
 public class MainActivity extends AppCompatActivity {
     public static final String LOG_TAG=MainActivity.class.getSimpleName();
@@ -60,19 +63,15 @@ public class MainActivity extends AppCompatActivity {
 
         mAdView.loadAd(request);
 
-        // Notification
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        PendingIntent pendingIntent=PendingIntent.getActivity(getApplicationContext(),1488,intent,0);
-
-        Notification notification = new Notification.Builder(getApplicationContext())
-                .setContentTitle("Lunch is ready!")
-                .setContentText("It's getting cold...")
-                .setSmallIcon(R.drawable.common_ic_googleplayservices)
-                .setContentIntent(pendingIntent)
-                .addAction(android.R.drawable.sym_action_chat,"Chat",pendingIntent)
-                .build();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.notify(666,notification);
+        Intent startedIntent = getIntent();
+        if(startedIntent!=null){
+            Log.d(LOG_TAG,"started from intent");
+            String notificationMessage=startedIntent.getStringExtra(NOTIFICATION_EXTRA);
+            if(notificationMessage!=null){
+                Toast.makeText(this, notificationMessage, Toast.LENGTH_SHORT).show();
+                Log.d(LOG_TAG,notificationMessage);
+            }
+        }
 
     }
 }
